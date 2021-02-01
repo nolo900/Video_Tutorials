@@ -20,7 +20,7 @@ function createQueries({ db }) {
 }
 
 function createHome({ db }) {
-    const queries = createQueries({ db });
+    const queries  = createQueries({ db });
     const handlers = createHandlers({ queries });
 
     const router = express.Router();
