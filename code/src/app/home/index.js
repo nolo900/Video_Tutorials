@@ -1,23 +1,29 @@
 const camelCaseKeys = require('camelcase-keys');
 const express = require('express');
 
+function createQueries({ db }) {
+    function loadHomePage() {
+        return db.then(client => {
+            return client('pages')
+                .where({ page_name: 'home' })
+                .limit(1)
+                .then(camelCaseKeys)
+                .then(rows => rows[0])
+        })
+    }
+    return { loadHomePage }
+}
+
 function createHandlers({ queries }){
     function home(req,res,next) {
-        return queries.loadHomePage().then(viewData => {
-            res.render('home/templates/home', viewData)
+        return queries.loadHomePage().then(homePageData => {
+            // console.log('homePageData ->', homePageData);
+            res.render('home/templates/home', homePageData.pageData)
         }).catch(next)
     }
     return { home }
 }
 
-function createQueries({ db }) {
-    function loadHomePage() {
-        return db.then(client => {
-            client('videos').sum('view_count as videosWatched').then(rows => rows[0])
-        })
-    }
-    return { loadHomePage }
-}
 
 function createHome({ db }) {
     const queries  = createQueries({ db });

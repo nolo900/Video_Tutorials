@@ -23,16 +23,14 @@ function createActions({ messageStore }) {
 
 function createHandlers({ actions }) {
     function handleRecordViewing(req, res) {
-        return actions.recordViewing(req.context.traceId, req.params.videoId).then(() => res.redirect('/'))
+        return actions.recordViewing(req.context.traceId, req.params.videoId).then(() => res.redirect('back'))
     }
     return { handleRecordViewing }
 }
 
 function createRecordViewings({ messageStore }) {
     const actions = createActions({ messageStore });
-
     const handlers = createHandlers({ actions });
-
     const router = express.Router();
 
     router.route('/:videoId').post(handlers.handleRecordViewing);

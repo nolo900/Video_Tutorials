@@ -5,20 +5,38 @@ const createRecordViewingsApp = require('./app/record-viewings');
 const createPostgresClient = require('./postgres-client');
 const createMessageStore = require('./message-store');
 
+const createHomePageAggregator = require('./aggregators/home-page');
+
 function createConfig({ env }){
+	// practical_microservices database
 	const knexClient = createKnexClient({ connectionString: env.databaseUrl });
+	// message_db database
 	const postgresClient = createPostgresClient( { connectionString: env.messageStoreConnectionString });
-	console.log("POSTGRES CLIENT -> ", postgresClient);
 	const messageStore = createMessageStore({ db: postgresClient });
-	console.log("MESSAGE STORE -> ", messageStore);
 
 	const homeApp = createHomeApp({ db: knexClient });
 	const recordViewingsApp = createRecordViewingsApp({ messageStore });
 
+	const homePageAggregator = createHomePageAggregator({
+		db: knexClient,
+		messageStore
+	});
+
+	const aggregators = [
+		homePageAggregator
+	];
+
+	const components = [
+
+	];
+
 	return {
 		messageStore,
 		homeApp,
-		recordViewingsApp
+		recordViewingsApp,
+		homePageAggregator,
+		aggregators,
+		components,
 	}
 }
 module.exports = createConfig;
